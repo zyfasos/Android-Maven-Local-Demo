@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="zyf.asos.maventest.lib">
+
+    <application>
+        <activity
+            android:name="zyf.asos.maventest.activity.MainActivity"
+            android:theme="@style/Base.V26.Theme.AppCompat.Light"></activity>
+    </application>
+
+</manifest>

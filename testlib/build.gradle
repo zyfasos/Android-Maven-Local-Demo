@@ -1,0 +1,76 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        minSdkVersion 14
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation files('libs/library-1.0.19.jar')
+}
+
+// type显示指定任务类型或任务, 这里指定要执行Javadoc这个task,这个task在gradle中已经定义
+task androidJavadocs(type: Javadoc) {
+    // 设置源码所在的位置
+    source = android.sourceSets.main.java.sourceFiles
+}
+
+// 生成javadoc.jar
+task androidJavadocsJar(type: Jar) {
+    // 指定文档名称
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+// 生成sources.jar
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
+// 产生相关配置文件的任务
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
+}
+
+//上传 到 maven 的任务
+uploadArchives {
+    repositories.mavenDeployer {
+
+        repository(url: mavenReleasesUrl) {
+            authentication(userName: maven_local_username, password: maven_local_password)
+        }
+
+        snapshotRepository(url: mavenSnapshotUrl) {
+            authentication(userName: maven_local_username, password: maven_local_password)
+        }
+
+        pom.project {
+            // 注意：【这里通过切换 versionName 的赋值来区分上传快照包还是正式包（snapshot 版本必须以 -SNAPSHOT 结尾）】
+            //version snapshotVersionName
+            version versionName
+            artifactId maven_pom__artifactId
+            groupId maven_pom_groupId
+            packaging maven_pom__packaging
+            description maven_pom__description
+        }
+    }
+
+
+}
